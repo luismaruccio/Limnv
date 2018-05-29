@@ -5,6 +5,12 @@
  */
 package com.br.linmv.sisbanco.view;
 
+import javax.swing.JFormattedTextField;
+import javax.swing.text.DefaultFormatter;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
+
 /**
  *
  * @author luism
@@ -34,6 +40,11 @@ public class fCadConta extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         txtCodigo = new javax.swing.JTextField();
         lblCod = new javax.swing.JLabel();
+        lblTipoConta = new javax.swing.JLabel();
+        rdbtnComum = new javax.swing.JRadioButton();
+        rdbtnPremium = new javax.swing.JRadioButton();
+        lblCampoEspecial = new javax.swing.JLabel();
+        txtCampoEspecial = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,9 +65,28 @@ public class fCadConta extends javax.swing.JFrame {
             }
         });
 
-        txtCodigo.setEditable(false);
-
         lblCod.setText("Código");
+
+        lblTipoConta.setText("Tipo de Conta:");
+
+        rdbtnComum.setSelected(true);
+        rdbtnComum.setText("Comum");
+        rdbtnComum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbtnComumActionPerformed(evt);
+            }
+        });
+
+        rdbtnPremium.setText("Premium");
+        rdbtnPremium.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbtnPremiumActionPerformed(evt);
+            }
+        });
+
+        lblCampoEspecial.setText("Nº Cartão:");
+
+        txtCampoEspecial.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getCurrencyInstance())));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -64,6 +94,11 @@ public class fCadConta extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnGravar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnCancelar))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -73,20 +108,23 @@ public class fCadConta extends javax.swing.JFrame {
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblTitulo))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnGravar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelar)))
+                                    .addComponent(lblTitulo)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblCampoEspecial)
+                                    .addComponent(lblCod)
+                                    .addComponent(lblTipoConta))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(rdbtnComum)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(rdbtnPremium))
+                                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtCampoEspecial))))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblCod)
-                .addGap(18, 18, 18)
-                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,18 +133,25 @@ public class fCadConta extends javax.swing.JFrame {
                 .addComponent(lblTitulo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(lblCod))
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCod)
                     .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(101, 101, 101)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTipoConta)
+                    .addComponent(rdbtnComum)
+                    .addComponent(rdbtnPremium))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCampoEspecial)
+                    .addComponent(txtCampoEspecial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGravar)
-                    .addComponent(btnCancelar))
+                    .addComponent(btnCancelar)
+                    .addComponent(btnGravar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -142,6 +187,24 @@ public class fCadConta extends javax.swing.JFrame {
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void rdbtnComumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnComumActionPerformed
+        if (rdbtnComum.isSelected()){
+            
+            rdbtnPremium.setSelected(false);
+            lblCampoEspecial.setText("Limite Conta:");
+            
+            
+        }else
+            rdbtnPremium.setSelected(true);
+    }//GEN-LAST:event_rdbtnComumActionPerformed
+
+    private void rdbtnPremiumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnPremiumActionPerformed
+        if (rdbtnPremium.isSelected())
+            rdbtnComum.setSelected(false);
+        else
+            rdbtnComum.setSelected(true);
+    }//GEN-LAST:event_rdbtnPremiumActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,8 +246,13 @@ public class fCadConta extends javax.swing.JFrame {
     private javax.swing.JButton btnGravar;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel lblCampoEspecial;
     private javax.swing.JLabel lblCod;
+    private javax.swing.JLabel lblTipoConta;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JRadioButton rdbtnComum;
+    private javax.swing.JRadioButton rdbtnPremium;
+    private javax.swing.JFormattedTextField txtCampoEspecial;
     private javax.swing.JTextField txtCodigo;
     // End of variables declaration//GEN-END:variables
 }
