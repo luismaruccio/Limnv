@@ -2,7 +2,10 @@
 package com.br.linmv.sisbanco.view;
 
 import com.br.linmv.sisbanco.controller.Operacoes_Clientes;
+import com.br.linmv.sisbanco.controller.Operacoes_Bancarias;
+import com.br.linmv.sisbanco.controller.Operacoes_Contas;
 import com.br.linmv.sisbanco.model.Cliente;
+import com.br.linmv.sisbanco.model.Conta;
 import com.br.linmv.sisbanco.model.Listas;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +22,13 @@ public class fMain extends javax.swing.JFrame {
     Operacoes_Clientes opCli;
     Cliente edit;
     Cliente Inativar;
-    
-    
+
+    public List<Conta> Contas;
+    DefaultTableModel tmct;
+    Operacoes_Contas opContas;
+    Conta editConta;
+    Conta InativarConta;
+      
     public fMain() {
         this.Clientes = new ArrayList();
         initComponents();
@@ -39,6 +47,21 @@ public class fMain extends javax.swing.JFrame {
             if(!c.isInativo())
                 tmc.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getCpf()});
         }
+        
+    }
+    
+        private void PopularTblContas(Cliente c)
+    {
+        tmct = (DefaultTableModel) tblContas.getModel();
+        
+        while(tmct.getRowCount() > 0){
+            tmct.removeRow(0);
+        }
+        
+        /*for (Conta ct : Contas){
+            if(!ct.isInativo())
+                tmct.addRow(new Object[]{ct.getCodigo(), ct.getNome(), ct.getCpf()});
+        }*/
         
     }
 
@@ -226,6 +249,11 @@ public class fMain extends javax.swing.JFrame {
         btnEditarConta.setText("Editar");
 
         btnNovaConta.setText("Nova");
+        btnNovaConta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNovaContaActionPerformed(evt);
+            }
+        });
 
         btnSaldo.setText("Saldo");
 
@@ -316,7 +344,7 @@ public class fMain extends javax.swing.JFrame {
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         fCadCliente cadcliente = new fCadCliente();
-        cadcliente.setCallback(new CallBack() {
+        cadcliente.setCallback(new CallBack_Cliente() {
             @Override
             public void clienteCadastradoCall(Cliente c) {
                 if (c != null) {
@@ -327,7 +355,7 @@ public class fMain extends javax.swing.JFrame {
 
             @Override
             public void clienteEditadoCall(Cliente cliente) {
-                //
+                
             }
         });
         cadcliente.show();      
@@ -343,10 +371,10 @@ public class fMain extends javax.swing.JFrame {
         
         fCadCliente cadcliente = new fCadCliente();
         cadcliente.c = edit;
-        cadcliente.setCallback(new CallBack() {
+        cadcliente.setCallback(new CallBack_Cliente() {
             @Override
             public void clienteCadastradoCall(Cliente c) {
-                //
+                
             }
 
             @Override
@@ -386,6 +414,26 @@ public class fMain extends javax.swing.JFrame {
             PopularTblClientes();
         }
     }//GEN-LAST:event_btnInativarActionPerformed
+
+    private void btnNovaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovaContaActionPerformed
+        fCadConta cadconta = new fCadConta();
+        
+        cadconta.setCallback(new CallBack_Conta() {
+            @Override
+            public void contaCadastradaCall(Conta ct) {
+                if (ct != null) {
+                    opContas.Inserir(ct, Contas);
+                }    
+                PopularTblContas();
+            }
+
+            @Override
+            public void contaEditadaCall(Conta conta) {
+            }
+        });   
+        
+        cadconta.show();
+    }//GEN-LAST:event_btnNovaContaActionPerformed
 
     /**
      * @param args the command line arguments

@@ -16,7 +16,7 @@ import javax.swing.JPasswordField;
 public class fCadCliente extends javax.swing.JFrame {
 
     private boolean edicao;
-    private CallBack callback;
+    private CallBack_Cliente callback;
     public Cliente c;
     List<String> Campos = new ArrayList();
 
@@ -24,7 +24,7 @@ public class fCadCliente extends javax.swing.JFrame {
         initComponents();
     }
 
-    public void setCallback(CallBack callback) {
+    public void setCallback(CallBack_Cliente callback) {
         this.callback = callback;
     }
 

@@ -9,7 +9,7 @@ public class Cliente {
     private String cpf;
     private String senha;
     private boolean inativo;
-    private ArrayList<Cliente> contas;
+    private ArrayList<Conta> contas;
     
     public Cliente(String Nome, String Cpf, String Senha){
             this.inativo = false;

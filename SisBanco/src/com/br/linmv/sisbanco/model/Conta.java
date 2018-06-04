@@ -4,6 +4,7 @@ public class Conta {
     private int codigo;
     private double saldo;
     private boolean inativo;
+    protected String tipo;
 
     public int getCodigo() {
         return codigo;
