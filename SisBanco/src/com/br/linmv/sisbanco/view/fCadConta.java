@@ -1,6 +1,8 @@
 package com.br.linmv.sisbanco.view;
 
 import com.br.linmv.sisbanco.model.Conta;
+import com.br.linmv.sisbanco.model.Conta_Corrente;
+import com.br.linmv.sisbanco.model.Conta_Poupanca;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.text.DefaultFormatter;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
@@ -15,10 +18,9 @@ import javax.swing.text.NumberFormatter;
 
 public class fCadConta extends javax.swing.JFrame {
 
-    private boolean EmEdicao;
     private CallBack_Conta callback;
     private Conta c;
-    
+
     public fCadConta() {
         initComponents();
     }
@@ -26,19 +28,7 @@ public class fCadConta extends javax.swing.JFrame {
     public void setCallback(CallBack_Conta callback) {
         this.callback = callback;
     }
-    
-private void CarregarPropriedades() {
-        txtCodigo.setText(Integer.toString(c.getCodigo()));
-        if (c.getTipo().equals("Corrente")){
-            rdbtnCorrente.setSelected(true);
-            rdbtnPoupanca.setSelected(false);
-        } else {
-            rdbtnCorrente.setSelected(false);
-            rdbtnPoupanca.setSelected(true);            
-        }
-        
-        EmEdicao = true;
-    }    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -163,40 +153,55 @@ private void CarregarPropriedades() {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void btnGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGravarActionPerformed
+        String tipo_conta;
         
+        if(rdbtnCorrente.isSelected())
+            tipo_conta = "Corrente";
+        else
+            tipo_conta = "Poupança";
         
+        int Resul = JOptionPane.showConfirmDialog(null, "Deseja salvar esta conta " + tipo_conta + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
+        if (Resul == JOptionPane.YES_OPTION) {
+
+                if (tipo_conta.endsWith("Corrente"))
+                    c = new Conta_Corrente();
+                else
+                    c = new Conta_Poupanca();
+                this.dispose();
+                if (callback != null) {
+                    callback.contaCadastradaCall(c);
+                }
+        }
     }//GEN-LAST:event_btnGravarActionPerformed
 
-    
-    
+
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void rdbtnCorrenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnCorrenteActionPerformed
-        
-        if (rdbtnCorrente.isSelected())
+
+        if (rdbtnCorrente.isSelected()) {
             rdbtnPoupanca.setSelected(false);
-        else
+        } else {
             rdbtnPoupanca.setSelected(true);
-       
+        }
+
     }//GEN-LAST:event_rdbtnCorrenteActionPerformed
 
     private void rdbtnPoupancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnPoupancaActionPerformed
-        if (rdbtnPoupanca.isSelected())
+        if (rdbtnPoupanca.isSelected()) {
             rdbtnCorrente.setSelected(false);
-        else
+        } else {
             rdbtnCorrente.setSelected(true);
+        }
     }//GEN-LAST:event_rdbtnPoupancaActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        if (c != null) {
-            //IniciaEdicao();
-        } else {
+
             txtCodigo.setText(Integer.toString(Conta.getIncremento()));
-        }
     }//GEN-LAST:event_formWindowOpened
 
     /**

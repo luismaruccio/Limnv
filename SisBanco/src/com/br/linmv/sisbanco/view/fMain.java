@@ -96,6 +96,10 @@ public class fMain extends javax.swing.JFrame {
         }*/
         
     }
+    
+    public void AtivaContas(){
+        //
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -424,6 +428,7 @@ public class fMain extends javax.swing.JFrame {
         if (tblClientes.getSelectedRowCount() > 0){
             btnEditar.setEnabled(true);
             btnInativar.setEnabled(true);
+            AtivaContas();
         }else{
             btnEditar.setEnabled(false);
             btnInativar.setEnabled(false);
@@ -468,18 +473,7 @@ public class fMain extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNovaContaActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        ControlePopUpMenu();
-        tblContas.addMouseListener(
-            new java.awt.event.MouseAdapter() {
-            //Importe a classe java.awt.event.MouseEvent
-                public void mouseClicked(MouseEvent e) {
-                // Se o botão direito do mouse foi pressionado
-                    if (e.getButton() == MouseEvent.BUTTON3){
-                    // Exibe o popup menu na posição do mouse.
-                        PopUpMenu.show(tblContas, e.getX(), e.getY());
-                    }
-                }
-            });
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
