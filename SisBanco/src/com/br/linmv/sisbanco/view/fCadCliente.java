@@ -116,6 +116,9 @@ public class fCadCliente extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtCpfFocusGained(evt);
             }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtCpfFocusLost(evt);
+            }
         });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -297,6 +300,18 @@ public class fCadCliente extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnGravarActionPerformed
+
+    private void txtCpfFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCpfFocusLost
+        String CPF;
+          
+        CPF = txtCpf.getText().substring(0,3);
+        CPF = CPF + txtCpf.getText().substring(4,7);
+        CPF = CPF + txtCpf.getText().substring(8,11);
+        CPF = CPF + txtCpf.getText().substring(12,14);
+        
+        if (validaCPF.isCPF(CPF) == false)
+            JOptionPane.showMessageDialog(null, "O CPF é inválido!", "Erro...", JOptionPane.ERROR_MESSAGE);
+    }//GEN-LAST:event_txtCpfFocusLost
 
     private boolean Valida_Senhas() {
         if ((txtSenha.getText().length() > 0) && (txtConfSenha.getText().length() > 0) && (!txtSenha.getText().equals(txtConfSenha.getText()))) {
