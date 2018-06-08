@@ -31,6 +31,7 @@ public class fMain extends javax.swing.JFrame {
     Operacoes_Contas opContas;
     Conta editConta;
     Conta InativarConta;
+    Cliente CliContas;
     
     //Controle do PopUpMenu
     JPopupMenu PopUpMenu = new JPopupMenu();
@@ -82,7 +83,7 @@ public class fMain extends javax.swing.JFrame {
         
     }
     
-        private void PopularTblContas(Cliente c)
+        private void PopularTblContas()
     {
         tmct = (DefaultTableModel) tblContas.getModel();
         
@@ -90,15 +91,23 @@ public class fMain extends javax.swing.JFrame {
             tmct.removeRow(0);
         }
         
-        /*for (Conta ct : Contas){
+        for (Conta ct : Contas){
             if(!ct.isInativo())
-                tmct.addRow(new Object[]{ct.getCodigo(), ct.getNome(), ct.getCpf()});
-        }*/
+                tmct.addRow(new Object[]{ct.getCodigo(), ct.getTipo()});
+        }
         
     }
     
     public void AtivaContas(){
-        //
+       CliContas = RetornaCliente();
+       
+       Contas = CliContas.getContas();
+       
+       if (Contas != null)
+        PopularTblContas();
+       else
+        Conta = new List
+               
     }
 
     /**
@@ -126,9 +135,7 @@ public class fMain extends javax.swing.JFrame {
         tblContas = new javax.swing.JTable();
         jSeparator4 = new javax.swing.JSeparator();
         btnInativarConta = new javax.swing.JButton();
-        btnEditarConta = new javax.swing.JButton();
         btnNovaConta = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -282,10 +289,8 @@ public class fMain extends javax.swing.JFrame {
         btnInativarConta.setText("Inativar");
         btnInativarConta.setEnabled(false);
 
-        btnEditarConta.setText("Editar");
-        btnEditarConta.setEnabled(false);
-
         btnNovaConta.setText("Nova");
+        btnNovaConta.setEnabled(false);
         btnNovaConta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNovaContaActionPerformed(evt);
@@ -299,18 +304,15 @@ public class fMain extends javax.swing.JFrame {
             .addGroup(pnlContasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlContasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlContasLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(pnlContasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlContasLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnNovaConta)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnEditarConta)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnInativarConta))))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE))
+                                .addComponent(btnInativarConta))
+                            .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         pnlContasLayout.setVerticalGroup(
@@ -323,16 +325,8 @@ public class fMain extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlContasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInativarConta)
-                    .addComponent(btnEditarConta)
                     .addComponent(btnNovaConta)))
         );
-
-        jButton2.setText("jButton2");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -353,18 +347,14 @@ public class fMain extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTitulo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
-                        .addGap(215, 215, 215))))
+                        .addGap(215, 620, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTitulo)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblTitulo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -377,6 +367,19 @@ public class fMain extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+  
+    
+    private Cliente RetornaCliente(){
+        
+        int slcRow = tblClientes.getSelectedRow();
+        
+        int CodCliSelecionado = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+        int Posicao = opCli.BuscarCod(Clientes, CodCliSelecionado);
+        
+        return opCli.GetCliente(Clientes, Posicao);
+        
+    }
+    
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         fCadCliente cadcliente = new fCadCliente();
         cadcliente.setCallback(new CallBack_Cliente() {
@@ -428,10 +431,12 @@ public class fMain extends javax.swing.JFrame {
         if (tblClientes.getSelectedRowCount() > 0){
             btnEditar.setEnabled(true);
             btnInativar.setEnabled(true);
+            btnNovaConta.setEnabled(true);
             AtivaContas();
         }else{
             btnEditar.setEnabled(false);
             btnInativar.setEnabled(false);
+            btnNovaConta.setEnabled(false);
         }
     }//GEN-LAST:event_tblClientesMouseClicked
 
@@ -460,8 +465,9 @@ public class fMain extends javax.swing.JFrame {
             public void contaCadastradaCall(Conta ct) {
                 if (ct != null) {
                     opContas.Inserir(ct, Contas);
+                    opCli.SetContas(Contas, CliContas);
                 }    
-                //PopularTblContas();
+                PopularTblContas();
             }
 
             @Override
@@ -471,10 +477,6 @@ public class fMain extends javax.swing.JFrame {
         
         cadconta.show();
     }//GEN-LAST:event_btnNovaContaActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -515,12 +517,10 @@ public class fMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarCliente;
     private javax.swing.JButton btnEditar;
-    private javax.swing.JButton btnEditarConta;
     private javax.swing.JButton btnInativar;
     private javax.swing.JButton btnInativarConta;
     private javax.swing.JButton btnNovaConta;
     private javax.swing.JButton btnNovo;
-    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;

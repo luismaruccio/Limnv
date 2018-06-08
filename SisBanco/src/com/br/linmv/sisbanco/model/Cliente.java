@@ -1,15 +1,16 @@
 package com.br.linmv.sisbanco.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Cliente {
-    private static int seq = 0;
+    private static int seq = 1;
     private int codigo;
     private String nome;
     private String cpf;
     private String senha;
     private boolean inativo;
-    private ArrayList<Conta> contas;
+    private List<Conta> contas;
     
     public Cliente(String Nome, String Cpf, String Senha){
             this.inativo = false;
@@ -67,11 +68,11 @@ public class Cliente {
         this.inativo = inativo;
     }
     
-    public void setContas(ArrayList Contas){
+    public void setContas(List Contas){
         this.contas = Contas;
     }
     
-    public ArrayList getContas(){
+    public List getContas(){
         return this.contas;
     }
    

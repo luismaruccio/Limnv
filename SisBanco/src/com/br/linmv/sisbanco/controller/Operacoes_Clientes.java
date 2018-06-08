@@ -51,5 +51,11 @@ public class Operacoes_Clientes implements Operacoes{
     
         return (Cliente)lista.get(posicao);
         
-    }  
+    }
+    
+    public void SetContas(List listacontas, Object obj){
+        Cliente c = (Cliente)obj;
+        c.setContas(listacontas);        
+    }
+    
 }
