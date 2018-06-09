@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Cliente {
     private static int seq = 1;
+    private int seqconta = 1;
     private int codigo;
     private String nome;
     private String cpf;
@@ -18,7 +19,18 @@ public class Cliente {
             this.cpf = Cpf;
             this.nome = Nome;
             this.senha = Senha;
+            this.contas = new ArrayList();
     }
+
+    public int getSeqconta() {
+        return seqconta;
+    }
+
+    public void setSeqconta(int seqconta) {
+        this.seqconta++;
+    }
+    
+    
 
     public static int getSeq() {
         return seq;

@@ -20,6 +20,7 @@ public class fCadConta extends javax.swing.JFrame {
 
     private CallBack_Conta callback;
     private Conta c;
+    public int seq;
 
     public fCadConta() {
         initComponents();
@@ -166,9 +167,9 @@ public class fCadConta extends javax.swing.JFrame {
         if (Resul == JOptionPane.YES_OPTION) {
 
                 if (tipo_conta.endsWith("Corrente"))
-                    c = new Conta_Corrente();
+                    c = new Conta_Corrente(seq);
                 else
-                    c = new Conta_Poupanca();
+                    c = new Conta_Poupanca(seq);
                 this.dispose();
                 if (callback != null) {
                     callback.contaCadastradaCall(c);
@@ -201,7 +202,7 @@ public class fCadConta extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 
-            txtCodigo.setText(Integer.toString(Conta.getIncremento()));
+            txtCodigo.setText(Integer.toString(seq));
     }//GEN-LAST:event_formWindowOpened
 
     /**

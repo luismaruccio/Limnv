@@ -1,16 +1,7 @@
 package com.br.linmv.sisbanco.model;
 
 public class Conta {
-    protected static int incremento;
     private int codigo;
-
-    public static int getIncremento() {
-        return incremento;
-    }
-
-    public static void setIncremento(int incremento) {
-        Conta.incremento = incremento;
-    }
     private double saldo;
     private boolean inativo;
     protected String tipo;

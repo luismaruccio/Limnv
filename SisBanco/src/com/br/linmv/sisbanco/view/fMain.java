@@ -46,6 +46,7 @@ public class fMain extends javax.swing.JFrame {
         this.Clientes = new ArrayList();
         initComponents();
         opCli = new Operacoes_Clientes();
+        opContas = new Operacoes_Contas();
 
     }
     
@@ -96,18 +97,27 @@ public class fMain extends javax.swing.JFrame {
                 tmct.addRow(new Object[]{ct.getCodigo(), ct.getTipo()});
         }
         
+        ControlePopUpMenu();
+        tblContas.addMouseListener(
+        
+            new java.awt.event.MouseAdapter() {
+                //Importe a classe java.awt.event.MouseEvent
+                public void mouseClicked(MouseEvent e) {
+                    // Se o botão direito do mouse foi pressionado
+                    if (e.getButton() == MouseEvent.BUTTON3){
+                        // Exibe o popup menu na posição do mouse.
+                        PopUpMenu.show(tblContas, e.getX(), e.getY());
+                    }
+                }
+            }
+        );
     }
     
     public void AtivaContas(){
        CliContas = RetornaCliente();
        
-       Contas = CliContas.getContas();
-       
-       if (Contas != null)
-        PopularTblContas();
-       else
-        Conta = new List
-               
+       Contas = CliContas.getContas(); 
+       PopularTblContas();         
     }
 
     /**
@@ -259,7 +269,7 @@ public class fMain extends javax.swing.JFrame {
 
         tblContas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+
             },
             new String [] {
                 "Nº Conta", "Tipo"
@@ -458,6 +468,7 @@ public class fMain extends javax.swing.JFrame {
 
     private void btnNovaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovaContaActionPerformed
         fCadConta cadconta = new fCadConta();
+        cadconta.seq = Contas.size() + 1;
         cadconta.show();
         
         cadconta.setCallback(new CallBack_Conta() {

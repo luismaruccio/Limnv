@@ -4,9 +4,9 @@ public class Conta_Corrente extends Conta {
     private double taxa_transacao = 0.8;
     private int op_gratuitas = 10;
 
-    public Conta_Corrente() {
+    public Conta_Corrente(int cod) {
         this.tipo = "Corrente";
-        setCodigo(incremento++);
+        setCodigo(cod);
     }
     
     public String getTipo() {
