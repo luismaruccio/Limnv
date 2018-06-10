@@ -1,4 +1,3 @@
-
 package com.br.linmv.sisbanco.view;
 
 import com.br.linmv.sisbanco.controller.Operacoes_Clientes;
@@ -7,6 +6,9 @@ import com.br.linmv.sisbanco.controller.Operacoes_Contas;
 import com.br.linmv.sisbanco.model.Cliente;
 import com.br.linmv.sisbanco.model.Conta;
 import com.br.linmv.sisbanco.model.Listas;
+import com.sun.xml.internal.ws.util.StringUtils;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +17,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 
-
-
 public class fMain extends javax.swing.JFrame {
-
+    
     public List<Cliente> Clientes;
     Listas l = new Listas();
     DefaultTableModel tmc;
     Operacoes_Clientes opCli;
     Cliente edit;
     Cliente Inativar;
-
+    
     public List<Conta> Contas;
     DefaultTableModel tmct;
     Operacoes_Contas opContas;
-    Conta editConta;
+    Conta operConta;
     Conta InativarConta;
     Cliente CliContas;
-    
+
     //Controle do PopUpMenu
     JPopupMenu PopUpMenu = new JPopupMenu();
     JMenuItem MISacar = new JMenuItem();
@@ -40,27 +40,56 @@ public class fMain extends javax.swing.JFrame {
     JMenuItem MIDepositar = new JMenuItem();
     JMenuItem MIExtrato = new JMenuItem();
     JMenuItem MITransferir = new JMenuItem();
-
     
     public fMain() {
         this.Clientes = new ArrayList();
         initComponents();
         opCli = new Operacoes_Clientes();
         opContas = new Operacoes_Contas();
-
     }
     
-    private void ControlePopUpMenu(){
-        
+    private String GetNumConta(int CodCli, int CodCon) {
+        return ((String.format("%03d", CodCli)) + "-" + (String.format("%04d", CodCon)));
+    }
+    
+    private void ControlePopUpMenu() {
+
         //Seta Nomes
         MISaldo.setText("Saldo");
         MIDepositar.setText("Depositar");
         MISacar.setText("Sacar");
+        MISacar.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                int teste = e.getID();
+                
+                int slcRow = tblContas.getSelectedRow();
+                
+                int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+                int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+                
+                operConta = opContas.GetConta(Contas, Posicao);
+                
+                fOperContas OperContas = new fOperContas();
+                OperContas.Oper = "Saque";
+                OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                    @Override
+                    public void opercacaoEfetuadaCall(double vlr) {
+                        opContas.Saque(operConta, vlr);
+                    }
+                });
+                OperContas.show();
+            }
+            
+        });
         MITransferir.setText("Transferir");
         MIExtrato.setText("Extrato");
-        
+
         //Adiciona no PopUpMenu
-        
         PopUpMenu.add(MISaldo);
         PopUpMenu.add(MISacar);
         PopUpMenu.add(MIDepositar);
@@ -69,55 +98,54 @@ public class fMain extends javax.swing.JFrame {
         
     }
     
-    private void PopularTblClientes()
-    {
+    private void PopularTblClientes() {
         tmc = (DefaultTableModel) tblClientes.getModel();
         
-        while(tmc.getRowCount() > 0){
+        while (tmc.getRowCount() > 0) {
             tmc.removeRow(0);
         }
         
-        for (Cliente c : Clientes){
-            if(!c.isInativo())
+        for (Cliente c : Clientes) {
+            if (!c.isInativo()) {
                 tmc.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getCpf()});
+            }
         }
         
     }
     
-        private void PopularTblContas()
-    {
+    private void PopularTblContas() {
         tmct = (DefaultTableModel) tblContas.getModel();
         
-        while(tmct.getRowCount() > 0){
+        while (tmct.getRowCount() > 0) {
             tmct.removeRow(0);
         }
         
-        for (Conta ct : Contas){
-            if(!ct.isInativo())
+        for (Conta ct : Contas) {
+            if (!ct.isInativo()) {
                 tmct.addRow(new Object[]{ct.getCodigo(), ct.getTipo()});
+            }
         }
         
         ControlePopUpMenu();
         tblContas.addMouseListener(
-        
-            new java.awt.event.MouseAdapter() {
-                //Importe a classe java.awt.event.MouseEvent
-                public void mouseClicked(MouseEvent e) {
-                    // Se o botão direito do mouse foi pressionado
-                    if (e.getButton() == MouseEvent.BUTTON3){
-                        // Exibe o popup menu na posição do mouse.
-                        PopUpMenu.show(tblContas, e.getX(), e.getY());
-                    }
+                new java.awt.event.MouseAdapter() {
+            //Importe a classe java.awt.event.MouseEvent
+            public void mouseClicked(MouseEvent e) {
+                // Se o botão direito do mouse foi pressionado
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    // Exibe o popup menu na posição do mouse.
+                    PopUpMenu.show(tblContas, e.getX(), e.getY());
                 }
             }
+        }
         );
     }
     
-    public void AtivaContas(){
-       CliContas = RetornaCliente();
-       
-       Contas = CliContas.getContas(); 
-       PopularTblContas();         
+    public void AtivaContas() {
+        CliContas = RetornaCliente();
+        
+        Contas = CliContas.getContas();
+        PopularTblContas();
     }
 
     /**
@@ -290,6 +318,11 @@ public class fMain extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tblContas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblContasMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblContas);
         if (tblContas.getColumnModel().getColumnCount() > 0) {
             tblContas.getColumnModel().getColumn(0).setResizable(false);
@@ -377,9 +410,7 @@ public class fMain extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-  
-    
-    private Cliente RetornaCliente(){
+    private Cliente RetornaCliente() {
         
         int slcRow = tblClientes.getSelectedRow();
         
@@ -389,7 +420,7 @@ public class fMain extends javax.swing.JFrame {
         return opCli.GetCliente(Clientes, Posicao);
         
     }
-    
+
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         fCadCliente cadcliente = new fCadCliente();
         cadcliente.setCallback(new CallBack_Cliente() {
@@ -400,13 +431,13 @@ public class fMain extends javax.swing.JFrame {
                 }
                 PopularTblClientes();
             }
-
+            
             @Override
             public void clienteEditadoCall(Cliente cliente) {
                 
             }
         });
-        cadcliente.show();      
+        cadcliente.show();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
@@ -424,26 +455,26 @@ public class fMain extends javax.swing.JFrame {
             public void clienteCadastradoCall(Cliente c) {
                 
             }
-
+            
             @Override
             public void clienteEditadoCall(Cliente c) {
-               if (c != null){                   
-                   opCli.Editar(c, Clientes, Posicao);
-                   PopularTblClientes();
-               }
+                if (c != null) {
+                    opCli.Editar(c, Clientes, Posicao);
+                    PopularTblClientes();
+                }
             }
         });
         cadcliente.show();
-        
+
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
-        if (tblClientes.getSelectedRowCount() > 0){
+        if (tblClientes.getSelectedRowCount() > 0) {
             btnEditar.setEnabled(true);
             btnInativar.setEnabled(true);
             btnNovaConta.setEnabled(true);
             AtivaContas();
-        }else{
+        } else {
             btnEditar.setEnabled(false);
             btnInativar.setEnabled(false);
             btnNovaConta.setEnabled(false);
@@ -460,7 +491,7 @@ public class fMain extends javax.swing.JFrame {
         
         int Resul = JOptionPane.showConfirmDialog(null, "Deseja inativar o cliente " + Inativar.getNome() + " ?", "Certeza...", JOptionPane.YES_NO_OPTION);
         
-        if (Resul == JOptionPane.YES_OPTION){
+        if (Resul == JOptionPane.YES_OPTION) {
             opCli.Inativar(Inativar, Clientes, Posicao);
             PopularTblClientes();
         }
@@ -477,17 +508,25 @@ public class fMain extends javax.swing.JFrame {
                 if (ct != null) {
                     opContas.Inserir(ct, Contas);
                     opCli.SetContas(Contas, CliContas);
-                }    
+                }
                 PopularTblContas();
             }
-
+            
             @Override
             public void contaEditadaCall(Conta conta) {
             }
-        });   
+        });
         
         cadconta.show();
     }//GEN-LAST:event_btnNovaContaActionPerformed
+
+    private void tblContasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblContasMouseClicked
+        if (tblContas.getSelectedRowCount() > 0) {
+            btnInativarConta.enable(true);
+        } else {
+            btnInativarConta.enable(false);
+        }
+    }//GEN-LAST:event_tblContasMouseClicked
 
     /**
      * @param args the command line arguments
@@ -522,7 +561,7 @@ public class fMain extends javax.swing.JFrame {
                 new fMain().setVisible(true);
             }
         });
-                
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

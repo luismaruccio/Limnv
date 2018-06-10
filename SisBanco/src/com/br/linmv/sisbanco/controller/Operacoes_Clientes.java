@@ -6,13 +6,14 @@ import com.br.linmv.sisbanco.model.Listas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Operacoes_Clientes implements Operacoes{
+public class Operacoes_Clientes implements Operacoes {
+
     private Listas l = new Listas();
 
     @Override
     public void Inserir(Object objeto, List lista) {
-        Cliente c = (Cliente)objeto;
-        l.Inserir_Lista(c, lista);        
+        Cliente c = (Cliente) objeto;
+        l.Inserir_Lista(c, lista);
     }
 
     @Override
@@ -32,30 +33,30 @@ public class Operacoes_Clientes implements Operacoes{
 
     @Override
     public void Inativar(Object objeto, List Lista, int Posicao) {
-        ((Cliente)objeto).setInativo(true);
-        Lista.set(Posicao, objeto);        
+        ((Cliente) objeto).setInativo(true);
+        Lista.set(Posicao, objeto);
     }
-    
+
     public int BuscarCod(List lista, int Cod) {
-         for(int i = 0; i < lista.size(); i++)
-         {
-             Cliente c = (Cliente)lista.get(i);
-             
-             if(Cod == c.getCodigo())
-                 return i;
-         }
+        for (int i = 0; i < lista.size(); i++) {
+            Cliente c = (Cliente) lista.get(i);
+
+            if (Cod == c.getCodigo()) {
+                return i;
+            }
+        }
         return -1;
     }
-   
-    public Cliente GetCliente(List lista, int posicao){
-    
-        return (Cliente)lista.get(posicao);
-        
+
+    public Cliente GetCliente(List lista, int posicao) {
+
+        return (Cliente) lista.get(posicao);
+
     }
-    
-    public void SetContas(List listacontas, Object obj){
-        Cliente c = (Cliente)obj;
-        c.setContas(listacontas);        
+
+    public void SetContas(List listacontas, Object obj) {
+        Cliente c = (Cliente) obj;
+        c.setContas(listacontas);
     }
-    
+
 }
