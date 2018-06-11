@@ -18,14 +18,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 
 public class fMain extends javax.swing.JFrame {
-    
+
     public List<Cliente> Clientes;
     Listas l = new Listas();
     DefaultTableModel tmc;
     Operacoes_Clientes opCli;
     Cliente edit;
     Cliente Inativar;
-    
+
     public List<Conta> Contas;
     DefaultTableModel tmct;
     Operacoes_Contas opContas;
@@ -40,52 +40,25 @@ public class fMain extends javax.swing.JFrame {
     JMenuItem MIDepositar = new JMenuItem();
     JMenuItem MIExtrato = new JMenuItem();
     JMenuItem MITransferir = new JMenuItem();
-    
+
     public fMain() {
         this.Clientes = new ArrayList();
         initComponents();
         opCli = new Operacoes_Clientes();
         opContas = new Operacoes_Contas();
     }
-    
+
     private String GetNumConta(int CodCli, int CodCon) {
         return ((String.format("%03d", CodCli)) + "-" + (String.format("%04d", CodCon)));
     }
-    
+
     private void ControlePopUpMenu() {
 
         //Seta Nomes
         MISaldo.setText("Saldo");
         MIDepositar.setText("Depositar");
         MISacar.setText("Sacar");
-        MISacar.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                int teste = e.getID();
-                
-                int slcRow = tblContas.getSelectedRow();
-                
-                int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
-                int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
-                
-                operConta = opContas.GetConta(Contas, Posicao);
-                
-                fOperContas OperContas = new fOperContas();
-                OperContas.Oper = "Saque";
-                OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
-                OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
-                OperContas.setCallback(new CallBack_OperacoesBancarias() {
-                    @Override
-                    public void opercacaoEfetuadaCall(double vlr) {
-                        opContas.Saque(operConta, vlr);
-                    }
-                });
-                OperContas.show();
-            }
-            
-        });
+        MISacar.addActionListener(acaoMISacar());
         MITransferir.setText("Transferir");
         MIExtrato.setText("Extrato");
 
@@ -95,38 +68,72 @@ public class fMain extends javax.swing.JFrame {
         PopUpMenu.add(MIDepositar);
         PopUpMenu.add(MITransferir);
         PopUpMenu.add(MIExtrato);
-        
+
     }
-    
+
+    private ActionListener acaoMISacar() {
+        ActionListener al;
+        al = new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int slcRow = tblContas.getSelectedRow();
+
+                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+
+                    operConta = opContas.GetConta(Contas, Posicao);
+
+                    fOperContas OperContas = new fOperContas();
+                    OperContas.Oper = "Saque";
+                    OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                    OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                    OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                        @Override
+                        public void opercacaoEfetuadaCall(double vlr) {
+                            opContas.Saque(operConta, vlr);
+                        }
+                    });
+                    OperContas.show();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
+
     private void PopularTblClientes() {
         tmc = (DefaultTableModel) tblClientes.getModel();
-        
+
         while (tmc.getRowCount() > 0) {
             tmc.removeRow(0);
         }
-        
+
         for (Cliente c : Clientes) {
             if (!c.isInativo()) {
                 tmc.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getCpf()});
             }
         }
-        
+
     }
-    
+
     private void PopularTblContas() {
         tmct = (DefaultTableModel) tblContas.getModel();
-        
+
         while (tmct.getRowCount() > 0) {
             tmct.removeRow(0);
         }
-        
+
         for (Conta ct : Contas) {
             if (!ct.isInativo()) {
                 tmct.addRow(new Object[]{ct.getCodigo(), ct.getTipo()});
             }
         }
-        
-        ControlePopUpMenu();
+
         tblContas.addMouseListener(
                 new java.awt.event.MouseAdapter() {
             //Importe a classe java.awt.event.MouseEvent
@@ -140,10 +147,10 @@ public class fMain extends javax.swing.JFrame {
         }
         );
     }
-    
+
     public void AtivaContas() {
         CliContas = RetornaCliente();
-        
+
         Contas = CliContas.getContas();
         PopularTblContas();
     }
@@ -176,6 +183,11 @@ public class fMain extends javax.swing.JFrame {
         btnNovaConta = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         lblTitulo.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         lblTitulo.setText("Linmv");
@@ -411,14 +423,14 @@ public class fMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private Cliente RetornaCliente() {
-        
+
         int slcRow = tblClientes.getSelectedRow();
-        
+
         int CodCliSelecionado = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
         int Posicao = opCli.BuscarCod(Clientes, CodCliSelecionado);
-        
+
         return opCli.GetCliente(Clientes, Posicao);
-        
+
     }
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
@@ -431,10 +443,10 @@ public class fMain extends javax.swing.JFrame {
                 }
                 PopularTblClientes();
             }
-            
+
             @Override
             public void clienteEditadoCall(Cliente cliente) {
-                
+
             }
         });
         cadcliente.show();
@@ -442,20 +454,20 @@ public class fMain extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int slcRow = tblClientes.getSelectedRow();
-        
+
         int CodCliSelecionado = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
         int Posicao = opCli.BuscarCod(Clientes, CodCliSelecionado);
-        
+
         edit = opCli.GetCliente(Clientes, Posicao);
-        
+
         fCadCliente cadcliente = new fCadCliente();
         cadcliente.c = edit;
         cadcliente.setCallback(new CallBack_Cliente() {
             @Override
             public void clienteCadastradoCall(Cliente c) {
-                
+
             }
-            
+
             @Override
             public void clienteEditadoCall(Cliente c) {
                 if (c != null) {
@@ -483,14 +495,14 @@ public class fMain extends javax.swing.JFrame {
 
     private void btnInativarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInativarActionPerformed
         int slcRow = tblClientes.getSelectedRow();
-        
+
         int CodCliSelecionado = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
         int Posicao = opCli.BuscarCod(Clientes, CodCliSelecionado);
-        
+
         Inativar = opCli.GetCliente(Clientes, Posicao);
-        
+
         int Resul = JOptionPane.showConfirmDialog(null, "Deseja inativar o cliente " + Inativar.getNome() + " ?", "Certeza...", JOptionPane.YES_NO_OPTION);
-        
+
         if (Resul == JOptionPane.YES_OPTION) {
             opCli.Inativar(Inativar, Clientes, Posicao);
             PopularTblClientes();
@@ -501,7 +513,7 @@ public class fMain extends javax.swing.JFrame {
         fCadConta cadconta = new fCadConta();
         cadconta.seq = Contas.size() + 1;
         cadconta.show();
-        
+
         cadconta.setCallback(new CallBack_Conta() {
             @Override
             public void contaCadastradaCall(Conta ct) {
@@ -511,12 +523,12 @@ public class fMain extends javax.swing.JFrame {
                 }
                 PopularTblContas();
             }
-            
+
             @Override
             public void contaEditadaCall(Conta conta) {
             }
         });
-        
+
         cadconta.show();
     }//GEN-LAST:event_btnNovaContaActionPerformed
 
@@ -527,6 +539,10 @@ public class fMain extends javax.swing.JFrame {
             btnInativarConta.enable(false);
         }
     }//GEN-LAST:event_tblContasMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        ControlePopUpMenu();
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -542,16 +558,24 @@ public class fMain extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(fMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(fMain.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(fMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(fMain.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(fMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(fMain.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(fMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(fMain.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -561,7 +585,7 @@ public class fMain extends javax.swing.JFrame {
                 new fMain().setVisible(true);
             }
         });
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
