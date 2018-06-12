@@ -12,8 +12,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 
@@ -56,7 +59,9 @@ public class fMain extends javax.swing.JFrame {
 
         //Seta Nomes
         MISaldo.setText("Saldo");
+        MISaldo.addActionListener(acaoMISaldo());
         MIDepositar.setText("Depositar");
+        MIDepositar.addActionListener(acaoMIDepositar());
         MISacar.setText("Sacar");
         MISacar.addActionListener(acaoMISacar());
         MITransferir.setText("Transferir");
@@ -74,7 +79,7 @@ public class fMain extends javax.swing.JFrame {
     private ActionListener acaoMISacar() {
         ActionListener al;
         al = new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -91,7 +96,7 @@ public class fMain extends javax.swing.JFrame {
                     OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
                     OperContas.setCallback(new CallBack_OperacoesBancarias() {
                         @Override
-                        public void opercacaoEfetuadaCall(double vlr) {
+                        public void operacaoEfetuadaCall(double vlr) {
                             opContas.Saque(operConta, vlr);
                         }
                     });
@@ -105,6 +110,88 @@ public class fMain extends javax.swing.JFrame {
         };
         return al;
     }
+
+    private ActionListener acaoMISaldo() {
+        ActionListener al;
+        al = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int slcRow = tblContas.getSelectedRow();
+
+                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+
+                    operConta = opContas.GetConta(Contas, Posicao);
+
+                    int i = 0;
+                    while (i < 3) {
+
+                        JPasswordField password = new JPasswordField(10);
+                        password.setEchoChar('*');
+                        JLabel rotulo = new JLabel("Confirme sua senha:");
+                        JPanel entUsuario = new JPanel();
+                        entUsuario.add(rotulo);
+                        entUsuario.add(password);
+
+                        JOptionPane.showMessageDialog(null, entUsuario, "Acesso restrito", JOptionPane.PLAIN_MESSAGE);
+                        String senha = password.getText();
+
+                        if (!senha.equals(CliContas.getSenha())) {
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (i < 3) {
+                        JOptionPane.showMessageDialog(null, "Seu saldo atual \n \n R$ " + opContas.Consulta_Saldo(operConta), "Saldo...", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
+    
+    private ActionListener acaoMIDepositar() {
+        ActionListener al;
+        al = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int slcRow = tblContas.getSelectedRow();
+
+                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+
+                    operConta = opContas.GetConta(Contas, Posicao);
+
+                    fOperContas OperContas = new fOperContas();
+                    OperContas.Oper = "Depósito";
+                    OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                    OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                    OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                        @Override
+                        public void operacaoEfetuadaCall(double vlr) {
+                            opContas.Depositar(operConta, vlr);
+                        }
+                    });
+                    OperContas.show();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
+
 
     private void PopularTblClientes() {
         tmc = (DefaultTableModel) tblClientes.getModel();

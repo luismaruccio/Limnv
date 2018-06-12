@@ -20,7 +20,7 @@ public class fOperContas extends javax.swing.JFrame {
     public String NConta;
     public double SaldoAtual;
     private CallBack_OperacoesBancarias callback;
-    
+
     public fOperContas() {
         initComponents();
     }
@@ -28,7 +28,7 @@ public class fOperContas extends javax.swing.JFrame {
     public void setCallback(CallBack_OperacoesBancarias callback) {
         this.callback = callback;
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -153,20 +153,35 @@ public class fOperContas extends javax.swing.JFrame {
 
     private void btnEfetuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEfetuarActionPerformed
         double VlrOper = Double.parseDouble((ftxtValor.getText().replace(",", ".")));
-        if (Oper.equals("Saque")){
-            if (VlrOper < SaldoAtual){
+        if (Oper.equals("Saque")) {
+            if (VlrOper < SaldoAtual) {
                 int Resul = JOptionPane.showConfirmDialog(null, "Deseja sacar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
                 if (Resul == JOptionPane.YES_OPTION) {
-                    
-                    if (callback != null){
+
+                    if (callback != null) {
                         this.dispose();
-                        callback.opercacaoEfetuadaCall(Double.parseDouble(ftxtValor.getText()));
+                        callback.operacaoEfetuadaCall(Double.parseDouble((ftxtValor.getText().replace(",", "."))));
                     }
-                    
-                    
+
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Saldo é insuficiente!\n \n"+"Saldo Atual: R$ " + SaldoAtual + " \n" + "Saldo a sacar: R$ " + ftxtValor.getText(), "Erro...", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Saldo é insuficiente!\n \n" + "Saldo Atual: R$ " + SaldoAtual + " \n" + "Saldo a sacar: R$ " + ftxtValor.getText(), "Erro...", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (Oper.equals("Depósito")) {
+
+            int Resul = JOptionPane.showConfirmDialog(null, "Deseja depositar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
+            if (Resul == JOptionPane.YES_OPTION) {
+
+                if (callback != null) {
+
+                    double SaldoFinal = SaldoAtual + VlrOper;
+
+                    JOptionPane.showMessageDialog(null, "Seu saldo atual \n \n R$ " + SaldoFinal, "Saldo...", JOptionPane.INFORMATION_MESSAGE);
+
+                    this.dispose();
+                    callback.operacaoEfetuadaCall(Double.parseDouble((ftxtValor.getText().replace(",", "."))));
+                }
+
             }
         }
     }//GEN-LAST:event_btnEfetuarActionPerformed
@@ -178,13 +193,13 @@ public class fOperContas extends javax.swing.JFrame {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         lblTitulo.setText(Oper);
         lblVarNConta.setText(NConta);
-        
+
         DecimalFormat decimal = new DecimalFormat("#,###,###.00");
-         NumberFormatter numFormatter = new NumberFormatter(decimal);
-         numFormatter.setFormat(decimal);
-         numFormatter.setAllowsInvalid(false);
-         DefaultFormatterFactory dfFactory = new DefaultFormatterFactory(numFormatter);
-         ftxtValor.setFormatterFactory(dfFactory);
+        NumberFormatter numFormatter = new NumberFormatter(decimal);
+        numFormatter.setFormat(decimal);
+        numFormatter.setAllowsInvalid(false);
+        DefaultFormatterFactory dfFactory = new DefaultFormatterFactory(numFormatter);
+        ftxtValor.setFormatterFactory(dfFactory);
     }//GEN-LAST:event_formWindowOpened
 
     /**

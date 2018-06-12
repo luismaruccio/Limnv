@@ -5,7 +5,16 @@ public class Conta {
     private double saldo;
     private boolean inativo;
     protected String tipo;
+    protected Extrato extratos;
 
+    public Extrato getExtratos() {
+        return extratos;
+    }
+
+    public void setExtratos(Extrato extratos) {
+        this.extratos = extratos;
+    }
+    
     public String getTipo() {
         return tipo;
     }
