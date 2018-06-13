@@ -2,8 +2,12 @@ package com.br.linmv.sisbanco.controller;
 
 import com.br.linmv.sisbanco.model.Conta;
 import com.br.linmv.sisbanco.model.Extrato;
+import com.br.linmv.sisbanco.model.Lancamentos;
 import com.br.linmv.sisbanco.model.Listas;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
@@ -81,7 +85,17 @@ public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
 
     @Override
     public Extrato getExtrato(Conta Origem) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Origem.getExtratos();    
     }
-
+    
+    public Extrato inserirLancamentos(String op, double vlr_op, double vlr_atual, Extrato ext){
+        DateFormat fData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date d = new Date();
+        String dtStr = fData.format(d);
+        
+        Lancamentos lanc = new Lancamentos(dtStr, op, vlr_op, vlr_atual);
+        ext.Push(lanc);
+        
+        return ext;
+    }
 }

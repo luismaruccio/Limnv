@@ -6,6 +6,7 @@ public class Conta_Poupanca extends Conta{
     public Conta_Poupanca(int cod) {
         this.tipo = "Poupança";
         setCodigo(cod);
+        this.extratos = new Extrato();
     }
 
     @Override

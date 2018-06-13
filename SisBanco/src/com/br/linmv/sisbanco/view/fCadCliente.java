@@ -303,14 +303,16 @@ public class fCadCliente extends javax.swing.JFrame {
 
     private void txtCpfFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCpfFocusLost
         String CPF;
-          
-        CPF = txtCpf.getText().substring(0,3);
-        CPF = CPF + txtCpf.getText().substring(4,7);
-        CPF = CPF + txtCpf.getText().substring(8,11);
-        CPF = CPF + txtCpf.getText().substring(12,14);
-        
-        if (validaCPF.isCPF(CPF) == false)
+
+        CPF = txtCpf.getText().substring(0, 3);
+        CPF = CPF + txtCpf.getText().substring(4, 7);
+        CPF = CPF + txtCpf.getText().substring(8, 11);
+        CPF = CPF + txtCpf.getText().substring(12, 14);
+
+        if (validaCPF.isCPF(CPF) == false) {
             JOptionPane.showMessageDialog(null, "O CPF é inválido!", "Erro...", JOptionPane.ERROR_MESSAGE);
+            txtCpf.requestFocus();
+        }
     }//GEN-LAST:event_txtCpfFocusLost
 
     private boolean Valida_Senhas() {
@@ -325,26 +327,28 @@ public class fCadCliente extends javax.swing.JFrame {
         CarregarPropriedades();
         int i = 0;
         while (i < 3) {
-            
+
             JPasswordField password = new JPasswordField(10);
             password.setEchoChar('*');
-            JLabel rotulo = new JLabel("Confirme sua senha:");  
+            JLabel rotulo = new JLabel("Confirme sua senha:");
             JPanel entUsuario = new JPanel();
             entUsuario.add(rotulo);
             entUsuario.add(password);
-            
-            JOptionPane.showMessageDialog(null, entUsuario, "Acesso restrito", JOptionPane.PLAIN_MESSAGE);   
+
+            JOptionPane.showMessageDialog(null, entUsuario, "Acesso restrito", JOptionPane.PLAIN_MESSAGE);
             String senha = password.getText();
-            
-            if(!senha.equals(c.getSenha()))
+
+            if (!senha.equals(c.getSenha())) {
                 i++;
-            else
+            } else {
                 break;
+            }
         }
-        if (i == 3)
+        if (i == 3) {
             this.dispose();
-        else
-        txtCpf.setEditable(false);
+        } else {
+            txtCpf.setEditable(false);
+        }
     }
 
     /**

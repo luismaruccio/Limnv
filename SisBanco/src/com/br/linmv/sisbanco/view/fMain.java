@@ -5,6 +5,7 @@ import com.br.linmv.sisbanco.controller.Operacoes_Bancarias;
 import com.br.linmv.sisbanco.controller.Operacoes_Contas;
 import com.br.linmv.sisbanco.model.Cliente;
 import com.br.linmv.sisbanco.model.Conta;
+import com.br.linmv.sisbanco.model.Extrato;
 import com.br.linmv.sisbanco.model.Listas;
 import com.sun.xml.internal.ws.util.StringUtils;
 import java.awt.event.ActionEvent;
@@ -36,6 +37,8 @@ public class fMain extends javax.swing.JFrame {
     Conta InativarConta;
     Cliente CliContas;
 
+    Extrato extratos;
+
     //Controle do PopUpMenu
     JPopupMenu PopUpMenu = new JPopupMenu();
     JMenuItem MISacar = new JMenuItem();
@@ -55,6 +58,17 @@ public class fMain extends javax.swing.JFrame {
         return ((String.format("%03d", CodCli)) + "-" + (String.format("%04d", CodCon)));
     }
 
+    private void retornaExtrato() {
+        int slcRow = tblContas.getSelectedRow();
+
+        int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+        int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+
+        operConta = opContas.GetConta(Contas, Posicao);
+
+        extratos = opContas.getExtrato(operConta);
+    }
+
     private void ControlePopUpMenu() {
 
         //Seta Nomes
@@ -66,6 +80,7 @@ public class fMain extends javax.swing.JFrame {
         MISacar.addActionListener(acaoMISacar());
         MITransferir.setText("Transferir");
         MIExtrato.setText("Extrato");
+        MIExtrato.addActionListener(acaoMIExtrato());
 
         //Adiciona no PopUpMenu
         PopUpMenu.add(MISaldo);
@@ -83,24 +98,39 @@ public class fMain extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int slcRow = tblContas.getSelectedRow();
+                    int i = 0;
+                    while (i < 3) {
 
-                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
-                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+                        JPasswordField password = new JPasswordField(10);
+                        password.setEchoChar('*');
+                        JLabel rotulo = new JLabel("Confirme sua senha:");
+                        JPanel entUsuario = new JPanel();
+                        entUsuario.add(rotulo);
+                        entUsuario.add(password);
 
-                    operConta = opContas.GetConta(Contas, Posicao);
+                        JOptionPane.showMessageDialog(null, entUsuario, "Acesso restrito", JOptionPane.PLAIN_MESSAGE);
+                        String senha = password.getText();
 
-                    fOperContas OperContas = new fOperContas();
-                    OperContas.Oper = "Saque";
-                    OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
-                    OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
-                    OperContas.setCallback(new CallBack_OperacoesBancarias() {
-                        @Override
-                        public void operacaoEfetuadaCall(double vlr) {
-                            opContas.Saque(operConta, vlr);
+                        if (!senha.equals(CliContas.getSenha())) {
+                            i++;
+                        } else {
+                            break;
                         }
-                    });
-                    OperContas.show();
+                    }
+                    if (i < 3) {
+                        fOperContas OperContas = new fOperContas();
+                        OperContas.Oper = "Saque";
+                        OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                        OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                        OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                            @Override
+                            public void operacaoEfetuadaCall(double vlr) {
+                                opContas.Saque(operConta, vlr);
+                                extratos = opContas.inserirLancamentos("Saque", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                            }
+                        });
+                        OperContas.show();
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -118,13 +148,6 @@ public class fMain extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int slcRow = tblContas.getSelectedRow();
-
-                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
-                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
-
-                    operConta = opContas.GetConta(Contas, Posicao);
-
                     int i = 0;
                     while (i < 3) {
 
@@ -156,7 +179,7 @@ public class fMain extends javax.swing.JFrame {
         };
         return al;
     }
-    
+
     private ActionListener acaoMIDepositar() {
         ActionListener al;
         al = new ActionListener() {
@@ -164,13 +187,6 @@ public class fMain extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int slcRow = tblContas.getSelectedRow();
-
-                    int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
-                    int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
-
-                    operConta = opContas.GetConta(Contas, Posicao);
-
                     fOperContas OperContas = new fOperContas();
                     OperContas.Oper = "Depósito";
                     OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
@@ -179,6 +195,7 @@ public class fMain extends javax.swing.JFrame {
                         @Override
                         public void operacaoEfetuadaCall(double vlr) {
                             opContas.Depositar(operConta, vlr);
+                            extratos = opContas.inserirLancamentos("Depósito", vlr, opContas.Consulta_Saldo(operConta), extratos);
                         }
                     });
                     OperContas.show();
@@ -192,6 +209,26 @@ public class fMain extends javax.swing.JFrame {
         return al;
     }
 
+    private ActionListener acaoMIExtrato() {
+        ActionListener al;
+        al = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (operConta != null) {
+                        fExtratos ext = new fExtratos();
+                        ext.ext = extratos;
+                        ext.show();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
 
     private void PopularTblClientes() {
         tmc = (DefaultTableModel) tblClientes.getModel();
@@ -622,6 +659,7 @@ public class fMain extends javax.swing.JFrame {
     private void tblContasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblContasMouseClicked
         if (tblContas.getSelectedRowCount() > 0) {
             btnInativarConta.enable(true);
+            retornaExtrato();
         } else {
             btnInativarConta.enable(false);
         }
@@ -631,42 +669,7 @@ public class fMain extends javax.swing.JFrame {
         ControlePopUpMenu();
     }//GEN-LAST:event_formWindowOpened
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(fMain.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(fMain.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(fMain.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(fMain.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new fMain().setVisible(true);

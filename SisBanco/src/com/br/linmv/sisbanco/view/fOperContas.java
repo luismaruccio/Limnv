@@ -55,7 +55,7 @@ public class fOperContas extends javax.swing.JFrame {
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -105,13 +105,13 @@ public class fOperContas extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblNConta)
                                     .addComponent(lblValor))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
                                         .addComponent(lblVarNConta)
                                         .addGap(0, 0, Short.MAX_VALUE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(ftxtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -152,36 +152,44 @@ public class fOperContas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEfetuarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEfetuarActionPerformed
-        double VlrOper = Double.parseDouble((ftxtValor.getText().replace(",", ".")));
-        if (Oper.equals("Saque")) {
-            if (VlrOper < SaldoAtual) {
-                int Resul = JOptionPane.showConfirmDialog(null, "Deseja sacar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
+        String vlr = ftxtValor.getText().replace(".", "");
+        double VlrOper = Double.parseDouble((vlr.replace(",", ".")));
+        if (VlrOper <= 0) {
+            JOptionPane.showMessageDialog(null, "Digite um valor válido!!", "Erro...", JOptionPane.ERROR_MESSAGE);
+        } else {
+            if (Oper.equals("Saque")) {
+                if (VlrOper < SaldoAtual) {
+                    int Resul = JOptionPane.showConfirmDialog(null, "Deseja sacar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
+                    if (Resul == JOptionPane.YES_OPTION) {
+
+                        if (callback != null) {
+                            double SaldoFinal = SaldoAtual - VlrOper;
+                            JOptionPane.showMessageDialog(null, "Seu saldo atual \n \n R$ " + SaldoFinal, "Saldo...", JOptionPane.INFORMATION_MESSAGE);
+
+                            this.dispose();
+                            callback.operacaoEfetuadaCall(VlrOper);
+                        }
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Saldo é insuficiente!\n \n" + "Saldo Atual: R$ " + SaldoAtual + " \n" + "Saldo a sacar: R$ " + ftxtValor.getText(), "Erro...", JOptionPane.ERROR_MESSAGE);
+                }
+            } else if (Oper.equals("Depósito")) {
+
+                int Resul = JOptionPane.showConfirmDialog(null, "Deseja depositar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
                 if (Resul == JOptionPane.YES_OPTION) {
 
                     if (callback != null) {
+
+                        double SaldoFinal = SaldoAtual + VlrOper;
+
+                        JOptionPane.showMessageDialog(null, "Seu saldo atual \n \n R$ " + SaldoFinal, "Saldo...", JOptionPane.INFORMATION_MESSAGE);
+
                         this.dispose();
-                        callback.operacaoEfetuadaCall(Double.parseDouble((ftxtValor.getText().replace(",", "."))));
+                        callback.operacaoEfetuadaCall(VlrOper);
                     }
 
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "Saldo é insuficiente!\n \n" + "Saldo Atual: R$ " + SaldoAtual + " \n" + "Saldo a sacar: R$ " + ftxtValor.getText(), "Erro...", JOptionPane.ERROR_MESSAGE);
-            }
-        } else if (Oper.equals("Depósito")) {
-
-            int Resul = JOptionPane.showConfirmDialog(null, "Deseja depositar R$ " + ftxtValor.getText() + " ?", "Confirmação...", JOptionPane.YES_NO_OPTION);
-            if (Resul == JOptionPane.YES_OPTION) {
-
-                if (callback != null) {
-
-                    double SaldoFinal = SaldoAtual + VlrOper;
-
-                    JOptionPane.showMessageDialog(null, "Seu saldo atual \n \n R$ " + SaldoFinal, "Saldo...", JOptionPane.INFORMATION_MESSAGE);
-
-                    this.dispose();
-                    callback.operacaoEfetuadaCall(Double.parseDouble((ftxtValor.getText().replace(",", "."))));
-                }
-
             }
         }
     }//GEN-LAST:event_btnEfetuarActionPerformed

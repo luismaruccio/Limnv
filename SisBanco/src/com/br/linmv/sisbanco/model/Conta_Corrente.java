@@ -7,6 +7,7 @@ public class Conta_Corrente extends Conta {
     public Conta_Corrente(int cod) {
         this.tipo = "Corrente";
         setCodigo(cod);
+        this.extratos = new Extrato();
     }
     
     public String getTipo() {
