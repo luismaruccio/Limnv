@@ -534,6 +534,11 @@ public class fMain extends javax.swing.JFrame {
 
         btnInativarConta.setText("Inativar");
         btnInativarConta.setEnabled(false);
+        btnInativarConta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInativarContaActionPerformed(evt);
+            }
+        });
 
         btnNovaConta.setText("Nova");
         btnNovaConta.setEnabled(false);
@@ -728,10 +733,10 @@ public class fMain extends javax.swing.JFrame {
 
     private void tblContasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblContasMouseClicked
         if (tblContas.getSelectedRowCount() > 0) {
-            btnInativarConta.enable(true);
+            btnInativarConta.setEnabled(true);
             retornaExtrato();
         } else {
-            btnInativarConta.enable(false);
+            btnInativarConta.setEnabled(false);
         }
     }//GEN-LAST:event_tblContasMouseClicked
 
@@ -757,6 +762,22 @@ public class fMain extends javax.swing.JFrame {
         }
         ftxtBusca.setText("");
     }//GEN-LAST:event_btnBuscarClienteActionPerformed
+
+    private void btnInativarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInativarContaActionPerformed
+        int slcRow = tblContas.getSelectedRow();
+
+        int CodContaSelecionada = Integer.parseInt(tmct.getValueAt(slcRow, 0).toString());
+        int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
+
+        InativarConta = opContas.GetConta(Contas, Posicao);
+        
+        int Resul = JOptionPane.showConfirmDialog(null, "Deseja inativar a conta " + GetNumConta(CliContas.getCodigo(), InativarConta.getCodigo()) + " ?", "Certeza...", JOptionPane.YES_NO_OPTION);
+
+        if (Resul == JOptionPane.YES_OPTION) {
+            opContas.Inativar(Inativar, Clientes, Posicao);
+            PopularTblClientes();
+        }
+    }//GEN-LAST:event_btnInativarContaActionPerformed
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
