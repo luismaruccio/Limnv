@@ -189,6 +189,36 @@ public class fMain extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+
+                    fOperContas OperContas = new fOperContas();
+                    OperContas.Oper = "Depósito";
+                    OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                    OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                    OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                        @Override
+                        public void operacaoEfetuadaCall(double vlr) {
+                            opContas.Depositar(operConta, vlr);
+                            opContas.inserirLancamentos("Depósito", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                        }
+                    });
+                    OperContas.show();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
+
+    private ActionListener acaoMITransferencia() {
+        ActionListener al;
+        al = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
                     int i = 0;
                     while (i < 3) {
 
@@ -209,49 +239,22 @@ public class fMain extends javax.swing.JFrame {
                         }
                     }
                     if (i < 3) {
-                        fOperContas OperContas = new fOperContas();
-                        OperContas.Oper = "Depósito";
-                        OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
-                        OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
-                        OperContas.setCallback(new CallBack_OperacoesBancarias() {
+
+                        fTransferencia fTransf = new fTransferencia();
+                        fTransf.Clientes = Clientes;
+                        fTransf.opCli = opCli;
+                        fTransf.opContas = opContas;
+                        fTransf.saldo_atual = opContas.Consulta_Saldo(operConta);
+                        fTransf.setCallBack(new CallBack_Transferencia() {
                             @Override
-                            public void operacaoEfetuadaCall(double vlr) {
-                                opContas.Depositar(operConta, vlr);
-                                opContas.inserirLancamentos("Depósito", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                            public void operacaoEfetuadaCall(double vlr, Conta Destino) {
+                                opContas.Transferir(vlr, operConta, Destino);
+                                opContas.inserirLancamentos("Tranferência", vlr, opContas.Consulta_Saldo(operConta), extratos);
+
                             }
                         });
-                        OperContas.show();
+                        fTransf.show();
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-            }
-        };
-        return al;
-    }
-
-    private ActionListener acaoMITransferencia() {
-        ActionListener al;
-        al = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    fTransferencia fTransf = new fTransferencia();
-                    fTransf.Clientes = Clientes;
-                    fTransf.opCli = opCli;
-                    fTransf.opContas = opContas;
-                    fTransf.saldo_atual = opContas.Consulta_Saldo(operConta);
-                    fTransf.setCallBack(new CallBack_Transferencia() {
-                        @Override
-                        public void operacaoEfetuadaCall(double vlr, Conta Destino) {
-                            opContas.Transferir(vlr, operConta, Destino);
-                            opContas.inserirLancamentos("Tranferência", vlr, opContas.Consulta_Saldo(operConta), extratos);
-
-                        }
-                    });
-                    fTransf.show();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -624,6 +627,8 @@ public class fMain extends javax.swing.JFrame {
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         fCadCliente cadcliente = new fCadCliente();
+        cadcliente.Clientes = Clientes;
+        cadcliente.opCli = opCli;
         cadcliente.setCallback(new CallBack_Cliente() {
             @Override
             public void clienteCadastradoCall(Cliente c) {
@@ -750,6 +755,7 @@ public class fMain extends javax.swing.JFrame {
                 }
             }
         }
+        ftxtBusca.setText("");
     }//GEN-LAST:event_btnBuscarClienteActionPerformed
 
     public static void main(String args[]) {

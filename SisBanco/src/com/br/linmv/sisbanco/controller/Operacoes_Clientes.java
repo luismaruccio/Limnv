@@ -58,5 +58,16 @@ public class Operacoes_Clientes implements Operacoes {
         Cliente c = (Cliente) obj;
         c.setContas(listacontas);
     }
+    
+    public int BuscarCPF(List lista, String cpf) {
+        for (int i = 0; i < lista.size(); i++) {
+            Cliente c = (Cliente) lista.get(i);
+
+            if (cpf.equals(c.getCpf())) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }

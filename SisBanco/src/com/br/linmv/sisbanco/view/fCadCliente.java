@@ -5,6 +5,7 @@
  */
 package com.br.linmv.sisbanco.view;
 
+import com.br.linmv.sisbanco.controller.Operacoes_Clientes;
 import com.br.linmv.sisbanco.model.Cliente;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,10 @@ public class fCadCliente extends javax.swing.JFrame {
     private CallBack_Cliente callback;
     public Cliente c;
     List<String> Campos = new ArrayList();
+
+    //Validação de CPF
+    public List<Cliente> Clientes;
+    Operacoes_Clientes opCli;
 
     public fCadCliente() {
         initComponents();
@@ -312,6 +317,11 @@ public class fCadCliente extends javax.swing.JFrame {
         if (validaCPF.isCPF(CPF) == false) {
             JOptionPane.showMessageDialog(null, "O CPF é inválido!", "Erro...", JOptionPane.ERROR_MESSAGE);
             txtCpf.requestFocus();
+        } else {
+           if (opCli.BuscarCPF(Clientes, txtCpf.getText()) > -1){
+               JOptionPane.showMessageDialog(null, "O CPF já se encontra cadastrado!", "Erro...", JOptionPane.ERROR_MESSAGE);
+                txtCpf.requestFocus();
+           }  
         }
     }//GEN-LAST:event_txtCpfFocusLost
 
