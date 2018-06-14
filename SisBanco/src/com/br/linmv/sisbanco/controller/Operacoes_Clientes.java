@@ -27,8 +27,8 @@ public class Operacoes_Clientes implements Operacoes {
     }
 
     @Override
-    public boolean Validar_Inativo(Object objeto, List Lista) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean Validar_Inativo(Object objeto) {
+        return (!((Cliente)objeto).isInativo());
     }
 
     @Override

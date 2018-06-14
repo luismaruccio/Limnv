@@ -36,6 +36,7 @@ public class fMain extends javax.swing.JFrame {
     Conta operConta;
     Conta InativarConta;
     Cliente CliContas;
+    int posicaoCliContas;
 
     Extrato extratos;
 
@@ -61,7 +62,7 @@ public class fMain extends javax.swing.JFrame {
     private void retornaExtrato() {
         int slcRow = tblContas.getSelectedRow();
 
-        int CodContaSelecionada = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
+        int CodContaSelecionada = Integer.parseInt(tmct.getValueAt(slcRow, 0).toString());
         int Posicao = opContas.BuscarCod(Contas, CodContaSelecionada);
 
         operConta = opContas.GetConta(Contas, Posicao);
@@ -79,6 +80,7 @@ public class fMain extends javax.swing.JFrame {
         MISacar.setText("Sacar");
         MISacar.addActionListener(acaoMISacar());
         MITransferir.setText("Transferir");
+        MITransferir.addActionListener(acaoMITransferencia());
         MIExtrato.setText("Extrato");
         MIExtrato.addActionListener(acaoMIExtrato());
 
@@ -126,7 +128,7 @@ public class fMain extends javax.swing.JFrame {
                             @Override
                             public void operacaoEfetuadaCall(double vlr) {
                                 opContas.Saque(operConta, vlr);
-                                extratos = opContas.inserirLancamentos("Saque", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                                opContas.inserirLancamentos("Saque", vlr, opContas.Consulta_Saldo(operConta), extratos);
                             }
                         });
                         OperContas.show();
@@ -187,18 +189,69 @@ public class fMain extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    fOperContas OperContas = new fOperContas();
-                    OperContas.Oper = "Depósito";
-                    OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
-                    OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
-                    OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                    int i = 0;
+                    while (i < 3) {
+
+                        JPasswordField password = new JPasswordField(10);
+                        password.setEchoChar('*');
+                        JLabel rotulo = new JLabel("Confirme sua senha:");
+                        JPanel entUsuario = new JPanel();
+                        entUsuario.add(rotulo);
+                        entUsuario.add(password);
+
+                        JOptionPane.showMessageDialog(null, entUsuario, "Acesso restrito", JOptionPane.PLAIN_MESSAGE);
+                        String senha = password.getText();
+
+                        if (!senha.equals(CliContas.getSenha())) {
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (i < 3) {
+                        fOperContas OperContas = new fOperContas();
+                        OperContas.Oper = "Depósito";
+                        OperContas.NConta = GetNumConta(CliContas.getCodigo(), operConta.getCodigo());
+                        OperContas.SaldoAtual = opContas.Consulta_Saldo(operConta);
+                        OperContas.setCallback(new CallBack_OperacoesBancarias() {
+                            @Override
+                            public void operacaoEfetuadaCall(double vlr) {
+                                opContas.Depositar(operConta, vlr);
+                                opContas.inserirLancamentos("Depósito", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                            }
+                        });
+                        OperContas.show();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        };
+        return al;
+    }
+
+    private ActionListener acaoMITransferencia() {
+        ActionListener al;
+        al = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    fTransferencia fTransf = new fTransferencia();
+                    fTransf.Clientes = Clientes;
+                    fTransf.opCli = opCli;
+                    fTransf.opContas = opContas;
+                    fTransf.saldo_atual = opContas.Consulta_Saldo(operConta);
+                    fTransf.setCallBack(new CallBack_Transferencia() {
                         @Override
-                        public void operacaoEfetuadaCall(double vlr) {
-                            opContas.Depositar(operConta, vlr);
-                            extratos = opContas.inserirLancamentos("Depósito", vlr, opContas.Consulta_Saldo(operConta), extratos);
+                        public void operacaoEfetuadaCall(double vlr, Conta Destino) {
+                            opContas.Transferir(vlr, operConta, Destino);
+                            opContas.inserirLancamentos("Tranferência", vlr, opContas.Consulta_Saldo(operConta), extratos);
+
                         }
                     });
-                    OperContas.show();
+                    fTransf.show();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -291,7 +344,6 @@ public class fMain extends javax.swing.JFrame {
         lblTitulo = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         pnlClientes = new javax.swing.JPanel();
-        txtBuscaCliente = new javax.swing.JTextField();
         btnBuscarCliente = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblClientes = new javax.swing.JTable();
@@ -299,6 +351,7 @@ public class fMain extends javax.swing.JFrame {
         btnInativar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnNovo = new javax.swing.JButton();
+        ftxtBusca = new javax.swing.JFormattedTextField();
         pnlContas = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblContas = new javax.swing.JTable();
@@ -320,6 +373,11 @@ public class fMain extends javax.swing.JFrame {
 
         btnBuscarCliente.setText("Buscar");
         btnBuscarCliente.setToolTipText("");
+        btnBuscarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarClienteActionPerformed(evt);
+            }
+        });
 
         tblClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -383,6 +441,12 @@ public class fMain extends javax.swing.JFrame {
             }
         });
 
+        try {
+            ftxtBusca.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+
         javax.swing.GroupLayout pnlClientesLayout = new javax.swing.GroupLayout(pnlClientes);
         pnlClientes.setLayout(pnlClientesLayout);
         pnlClientesLayout.setHorizontalGroup(
@@ -392,9 +456,9 @@ public class fMain extends javax.swing.JFrame {
                 .addGroup(pnlClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlClientesLayout.createSequentialGroup()
                         .addGroup(pnlClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(pnlClientesLayout.createSequentialGroup()
-                                .addComponent(txtBuscaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(ftxtBusca)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnBuscarCliente)))
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -415,8 +479,8 @@ public class fMain extends javax.swing.JFrame {
             .addGroup(pnlClientesLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtBuscaCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscarCliente))
+                    .addComponent(btnBuscarCliente)
+                    .addComponent(ftxtBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -553,8 +617,9 @@ public class fMain extends javax.swing.JFrame {
         int CodCliSelecionado = Integer.parseInt(tmc.getValueAt(slcRow, 0).toString());
         int Posicao = opCli.BuscarCod(Clientes, CodCliSelecionado);
 
-        return opCli.GetCliente(Clientes, Posicao);
+        posicaoCliContas = Posicao;
 
+        return opCli.GetCliente(Clientes, Posicao);
     }
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
@@ -669,6 +734,24 @@ public class fMain extends javax.swing.JFrame {
         ControlePopUpMenu();
     }//GEN-LAST:event_formWindowOpened
 
+    private void btnBuscarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarClienteActionPerformed
+        if ("   .   .   -  ".equals(ftxtBusca.getText())) {
+            PopularTblClientes();
+        } else {
+            tmc = (DefaultTableModel) tblClientes.getModel();
+
+            while (tmc.getRowCount() > 0) {
+                tmc.removeRow(0);
+            }
+
+            for (Cliente c : Clientes) {
+                if ((!c.isInativo()) && c.getCpf().equals(ftxtBusca.getText())) {
+                    tmc.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getCpf()});
+                }
+            }
+        }
+    }//GEN-LAST:event_btnBuscarClienteActionPerformed
+
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -685,6 +768,7 @@ public class fMain extends javax.swing.JFrame {
     private javax.swing.JButton btnInativarConta;
     private javax.swing.JButton btnNovaConta;
     private javax.swing.JButton btnNovo;
+    private javax.swing.JFormattedTextField ftxtBusca;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
@@ -695,6 +779,5 @@ public class fMain extends javax.swing.JFrame {
     private javax.swing.JPanel pnlContas;
     private javax.swing.JTable tblClientes;
     private javax.swing.JTable tblContas;
-    private javax.swing.JTextField txtBuscaCliente;
     // End of variables declaration//GEN-END:variables
 }

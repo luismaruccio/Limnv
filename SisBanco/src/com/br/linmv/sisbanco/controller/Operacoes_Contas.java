@@ -31,8 +31,8 @@ public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
     }
 
     @Override
-    public boolean Validar_Inativo(Object objeto, List Lista) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean Validar_Inativo(Object objeto) {
+        return (!((Conta) objeto).isInativo());
     }
 
     @Override
@@ -80,7 +80,8 @@ public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
 
     @Override
     public void Transferir(double vlr, Conta Origem, Conta remetente) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         Saque(Origem, vlr);
+         Depositar(remetente, vlr);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
         return Origem.getExtratos();    
     }
     
-    public Extrato inserirLancamentos(String op, double vlr_op, double vlr_atual, Extrato ext){
+    public void inserirLancamentos(String op, double vlr_op, double vlr_atual, Extrato ext){
         DateFormat fData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date d = new Date();
         String dtStr = fData.format(d);
@@ -96,6 +97,9 @@ public class Operacoes_Contas implements Operacoes, Operacoes_Bancarias {
         Lancamentos lanc = new Lancamentos(dtStr, op, vlr_op, vlr_atual);
         ext.Push(lanc);
         
-        return ext;
+    }
+    
+    public void setExtrato(Conta Origem, Extrato ext){
+        Origem.setExtratos(ext);
     }
 }
