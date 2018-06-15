@@ -259,7 +259,6 @@ public class fMain extends javax.swing.JFrame {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
             }
         };
         return al;
@@ -664,9 +663,7 @@ public class fMain extends javax.swing.JFrame {
         cadcliente.setCallback(new CallBack_Cliente() {
             @Override
             public void clienteCadastradoCall(Cliente c) {
-
             }
-
             @Override
             public void clienteEditadoCall(Cliente c) {
                 if (c != null) {
@@ -774,8 +771,8 @@ public class fMain extends javax.swing.JFrame {
         int Resul = JOptionPane.showConfirmDialog(null, "Deseja inativar a conta " + GetNumConta(CliContas.getCodigo(), InativarConta.getCodigo()) + " ?", "Certeza...", JOptionPane.YES_NO_OPTION);
 
         if (Resul == JOptionPane.YES_OPTION) {
-            opContas.Inativar(Inativar, Clientes, Posicao);
-            PopularTblClientes();
+            opContas.Inativar(InativarConta, Contas, Posicao);
+            PopularTblContas();
         }
     }//GEN-LAST:event_btnInativarContaActionPerformed
 
@@ -785,7 +782,6 @@ public class fMain extends javax.swing.JFrame {
                 new fMain().setVisible(true);
             }
         });
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
